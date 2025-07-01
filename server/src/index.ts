@@ -4,11 +4,28 @@ import axios from 'axios';
 import dotenv from 'dotenv';
 import type { Request, Response } from 'express';
 import bodyParser from 'body-parser';
+import { createClient } from 'redis';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+
+// Redis setup
+const redisHost = process.env.REDIS_HOST || 'localhost';
+const redisPort = process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT) : 6379;
+const redisUsername = process.env.REDIS_USERNAME || 'default';
+const redisPassword = process.env.REDIS_PASSWORD || '';
+const redisClient = createClient({
+    username: redisUsername,
+    password: redisPassword,
+    socket: {
+        host: redisHost,
+        port: redisPort,
+    },
+});
+redisClient.on('error', err => console.log('Redis Client Error', err));
+redisClient.connect().catch(console.error);
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -38,6 +55,15 @@ app.get('/api/telemetry', async (req: Request, res: Response) => {
         const start = req.query.start ? req.query.start.toString() : undefined;
         const end = req.query.end ? req.query.end.toString() : undefined;
         const length = req.query.length ? req.query.length.toString() : '5000'; // Default: 5000
+
+        // Build a cache key from all query params
+        const cacheKey = `telemetry:${state}:${sector}:${start || ''}:${end || ''}:${length}`;
+        // Try to get from Redis
+        const cached = await redisClient.get(cacheKey);
+        if (cached) {
+            res.json(JSON.parse(cached));
+            return;
+        }
 
         let url = `https://api.eia.gov/v2/electricity/retail-sales/data/?api_key=${apiKey}&frequency=monthly&data[0]=price&data[1]=sales&facets[stateid][]=${state}&facets[sectorid][]=${sector}`;
         if (start) url += `&start=${start}`;
@@ -70,6 +96,8 @@ app.get('/api/telemetry', async (req: Request, res: Response) => {
             price_units: item['price-units'],
             sales_units: item['sales-units'],
         }));
+        // Cache the result in Redis for 1 hour
+        await redisClient.set(cacheKey, JSON.stringify(formatted), { EX: 60 * 60 });
         res.json(formatted);
     } catch (error) {
         console.error('Error fetching EIA data:', error);
