@@ -36,12 +36,13 @@ app.get('/api/telemetry', async (req: Request, res: Response) => {
         // Get query params or set defaults
         const state = (req.query.state || 'AZ').toString().toUpperCase(); // Default: Arizona
         const sector = (req.query.sector || 'RES').toString().toUpperCase(); // Default: Residential
+        const frequency = (req.query.frequency || 'monthly').toString().toLowerCase(); // Default: monthly
         const start = req.query.start ? req.query.start.toString() : undefined;
         const end = req.query.end ? req.query.end.toString() : undefined;
         const length = req.query.length ? req.query.length.toString() : '5000'; // Default: 5000
 
         // Build a cache key from all query params
-        const cacheKey = `telemetry:${state}:${sector}:${start || ''}:${end || ''}:${length}`;
+        const cacheKey = `telemetry:${state}:${sector}:${frequency}:${start || ''}:${end || ''}:${length}`;
         // Try to get from Redis
         const cached = await redisClient.get(cacheKey);
         if (cached) {
@@ -49,7 +50,7 @@ app.get('/api/telemetry', async (req: Request, res: Response) => {
             return;
         }
 
-        let url = `https://api.eia.gov/v2/electricity/retail-sales/data/?api_key=${apiKey}&frequency=monthly&data[0]=price&data[1]=sales&facets[stateid][]=${state}&facets[sectorid][]=${sector}`;
+        let url = `https://api.eia.gov/v2/electricity/retail-sales/data/?api_key=${apiKey}&frequency=${frequency}&data[0]=price&data[1]=sales&facets[stateid][]=${state}&facets[sectorid][]=${sector}`;
         if (start) url += `&start=${start}`;
         if (end) url += `&end=${end}`;
         url += `&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=${length}`;

@@ -58,4 +58,9 @@ export const sectorOptions = [
     { code: 'TRN', name: 'Transportation' },
     { code: 'OTH', name: 'Other' },
     { code: 'ALL', name: 'All Sectors' },
+];
+
+export const frequencyOptions = [
+    { code: 'monthly', name: 'Monthly' },
+    { code: 'annual', name: 'Annual' }
 ]; 

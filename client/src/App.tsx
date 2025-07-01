@@ -1,13 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import MenuItem from '@mui/material/MenuItem';
-import TextField from '@mui/material/TextField';
-import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import { stateOptions, sectorOptions } from './options';
 import GridTopologyExplorer from './GridTopologyExplorer';
 import TelemetryDataTable from './TelemetryDataTable';
 import TelemetryChart from './TelemetryChart';
@@ -27,8 +23,9 @@ interface ApiResult {
 function App() {
   const [state, setState] = useState('AZ');
   const [sector, setSector] = useState('RES');
-  const [start, setStart] = useState('2015-01');
-  const [end, setEnd] = useState('2020-01');
+  const [frequency, setFrequency] = useState('monthly');
+  const [start, setStart] = useState('');
+  const [end, setEnd] = useState('');
   const [length, setLength] = useState('60');
   const [data, setData] = useState<ApiResult[]>([]);
   const [loading, setLoading] = useState(false);
@@ -40,7 +37,7 @@ function App() {
     setError('');
 
     try {
-      const params = { state, sector, start, end, length };
+      const params = { state, sector, frequency, start, end, length };
       const res = await axios.get<ApiResult[]>('http://localhost:4000/api/telemetry', { params });
       // If backend returns a single object, wrap in array
       const arr = Array.isArray(res.data) ? res.data : [res.data];
@@ -72,6 +69,8 @@ function App() {
               setState={setState}
               sector={sector}
               setSector={setSector}
+              frequency={frequency}
+              setFrequency={setFrequency}
               start={start}
               setStart={setStart}
               end={end}
