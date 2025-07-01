@@ -2,7 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import axios from 'axios';
 import dotenv from 'dotenv';
-import { regions } from './regions';
 import type { Request, Response } from 'express';
 
 dotenv.config();
@@ -42,13 +41,15 @@ app.get('/api/telemetry', async (req: Request, res: Response) => {
         if (start) url += `&start=${start}`;
         if (end) url += `&end=${end}`;
         url += `&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=${length}`;
+
         const response = await axios.get(url);
+
         let dataArr: EiaRetailSalesResult[] = response.data.response.data;
-        console.log(dataArr);
         if (!dataArr || dataArr.length === 0) {
             res.status(404).json({ error: 'No data returned from EIA for the given filters.' });
             return;
         }
+
         // If period is specified, filter for that period
         if (req.query.period) {
             dataArr = dataArr.filter((item: EiaRetailSalesResult) => item.period === req.query.period);
@@ -72,10 +73,6 @@ app.get('/api/telemetry', async (req: Request, res: Response) => {
         console.error('Error fetching EIA data:', error);
         res.status(500).json({ error: 'Failed to fetch data from EIA.' });
     }
-});
-
-app.get('/api/regions', (req: Request, res: Response) => {
-    res.json(regions);
 });
 
 app.listen(PORT, () => {
