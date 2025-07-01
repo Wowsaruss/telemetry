@@ -3,6 +3,7 @@ import cors from 'cors';
 import axios from 'axios';
 import dotenv from 'dotenv';
 import type { Request, Response } from 'express';
+import bodyParser from 'body-parser';
 
 dotenv.config();
 
@@ -10,6 +11,7 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 app.use(cors());
+app.use(bodyParser.json());
 
 interface EiaRetailSalesResult {
     period: string;
@@ -72,6 +74,53 @@ app.get('/api/telemetry', async (req: Request, res: Response) => {
     } catch (error) {
         console.error('Error fetching EIA data:', error);
         res.status(500).json({ error: 'Failed to fetch data from EIA.' });
+    }
+});
+
+// Grid Topology Explorer API
+// Accepts POST with { type: 'geojson' | 'pslf' | 'opendss', data: string|object }
+// For now, only GeoJSON is supported
+app.post('/api/grid-topology', (req: Request, res: Response) => {
+    const { type, data } = req.body;
+    if (!type || !data) {
+        res.status(400).json({ error: 'Missing type or data in request body.' });
+        return;
+    }
+    if (type === 'geojson') {
+        // Parse GeoJSON and extract nodes/edges for visualization
+        try {
+            const geo = typeof data === 'string' ? JSON.parse(data) : data;
+            if (!geo.features || !Array.isArray(geo.features)) {
+                res.status(400).json({ error: 'Invalid GeoJSON format.' });
+                return;
+            }
+            // Extract nodes (substations, endpoints) and edges (lines)
+            const nodes: any[] = [];
+            const edges: any[] = [];
+            geo.features.forEach((feature: any, idx: number) => {
+                if (feature.geometry.type === 'Point') {
+                    nodes.push({
+                        id: feature.id || `node-${idx}`,
+                        coordinates: feature.geometry.coordinates,
+                        properties: feature.properties || {},
+                    });
+                } else if (feature.geometry.type === 'LineString') {
+                    edges.push({
+                        id: feature.id || `edge-${idx}`,
+                        coordinates: feature.geometry.coordinates,
+                        properties: feature.properties || {},
+                    });
+                }
+            });
+            res.json({ nodes, edges });
+        } catch (e) {
+            res.status(400).json({ error: 'Failed to parse GeoJSON.' });
+        }
+    } else if (type === 'pslf' || type === 'opendss') {
+        // TODO: Add PSLF and OpenDSS parsing support
+        res.status(501).json({ error: 'PSLF and OpenDSS parsing not implemented yet.' });
+    } else {
+        res.status(400).json({ error: 'Unsupported type.' });
     }
 });
 
