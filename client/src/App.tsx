@@ -9,6 +9,7 @@ import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { stateOptions, sectorOptions } from './options';
 
 interface ApiResult {
   period: string;
@@ -19,19 +20,6 @@ interface ApiResult {
   price_units: string;
   sales_units: string;
 }
-
-const stateOptions = [
-  { code: 'AZ', name: 'Arizona' },
-  { code: 'WI', name: 'Wisconsin' },
-  { code: 'CA', name: 'California' },
-  // Add more as needed
-];
-const sectorOptions = [
-  { code: 'RES', name: 'Residential' },
-  { code: 'COM', name: 'Commercial' },
-  { code: 'IND', name: 'Industrial' },
-  // Add more as needed
-];
 
 function App() {
   const [state, setState] = useState('AZ');
@@ -46,11 +34,13 @@ function App() {
   const fetchData = async () => {
     setLoading(true);
     setError('');
+    
     try {
       const params = { state, sector, start, end, length };
       const res = await axios.get<ApiResult[]>('http://localhost:4000/api/telemetry', { params });
       // If backend returns a single object, wrap in array
       const arr = Array.isArray(res.data) ? res.data : [res.data];
+
       setData(arr);
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
@@ -69,26 +59,26 @@ function App() {
       <Typography variant="h4" gutterBottom>Telemetry Dashboard</Typography>
       <Paper sx={{ p: 2, mb: 3 }}>
         <Grid container spacing={2} alignItems="center">
-          <Grid item xs={12} sm={2}>
+          <Grid size={{ xs: 12, sm: 2 }}>
             <TextField select label="State" value={state} onChange={e => setState(e.target.value)} fullWidth>
               {stateOptions.map(opt => <MenuItem key={opt.code} value={opt.code}>{opt.name}</MenuItem>)}
             </TextField>
           </Grid>
-          <Grid item xs={12} sm={2}>
+          <Grid size={{ xs: 12, sm: 2 }}>
             <TextField select label="Sector" value={sector} onChange={e => setSector(e.target.value)} fullWidth>
               {sectorOptions.map(opt => <MenuItem key={opt.code} value={opt.code}>{opt.name}</MenuItem>)}
             </TextField>
           </Grid>
-          <Grid item xs={12} sm={2}>
+          <Grid size={{ xs: 12, sm: 2 }}>
             <TextField label="Start" value={start} onChange={e => setStart(e.target.value)} fullWidth placeholder="YYYY-MM" />
           </Grid>
-          <Grid item xs={12} sm={2}>
+          <Grid size={{ xs: 12, sm: 2 }}>
             <TextField label="End" value={end} onChange={e => setEnd(e.target.value)} fullWidth placeholder="YYYY-MM" />
           </Grid>
-          <Grid item xs={12} sm={2}>
+          <Grid size={{ xs: 12, sm: 2 }}>
             <TextField label="Length" value={length} onChange={e => setLength(e.target.value)} fullWidth />
           </Grid>
-          <Grid item xs={12} sm={2}>
+          <Grid size={{ xs: 12, sm: 2 }}>
             <Button variant="contained" onClick={fetchData} fullWidth disabled={loading}>Fetch Data</Button>
           </Grid>
         </Grid>
