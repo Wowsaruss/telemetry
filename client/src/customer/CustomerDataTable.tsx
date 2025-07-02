@@ -113,7 +113,7 @@ const CustomerDataTable: React.FC<CustomerDataTableProps> = ({ data }) => {
                                 <TableCell>{row.period}</TableCell>
                                 <TableCell>{row.state}</TableCell>
                                 <TableCell>{row.sector}</TableCell>
-                                <TableCell>{row.customers.toLocaleString()}</TableCell>
+                                <TableCell>{row.customers?.toLocaleString()}</TableCell>
                                 <TableCell>{row.customers_units}</TableCell>
                             </TableRow>
                         ))}
