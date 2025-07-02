@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
-import GridTopologyExplorer from './GridTopologyExplorer';
 import TelemetryDataTable from './TelemetryDataTable';
 import TelemetryChart from './TelemetryChart';
 import TelemetryFilterForm from './TelemetryFilterForm';
@@ -31,7 +30,7 @@ function App() {
   const [data, setData] = useState<ApiResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [showExplorer, setShowExplorer] = useState(false);
+  // const [showExplorer, setShowExplorer] = useState(false);
   const [currentDashboard, setCurrentDashboard] = useState<'telemetry' | 'customers'>('telemetry');
 
   const fetchData = async () => {
@@ -76,50 +75,39 @@ function App() {
           </Button>
         </Paper>
 
-        {showExplorer ? (
-          <GridTopologyExplorer />
-        ) : (
-          <>
-            <TelemetryFilterForm
-              state={state}
-              setState={setState}
-              sector={sector}
-              setSector={setSector}
-              frequency={frequency}
-              setFrequency={setFrequency}
-              start={start}
-              setStart={setStart}
-              end={end}
-              setEnd={setEnd}
-              length={length}
-              setLength={setLength}
-              onFetchData={fetchData}
-              loading={loading}
-            />
-            {error && (
-              <Paper sx={{ p: 2, mb: 3, elevation: 2, borderRadius: 2, bgcolor: 'error.light' }}>
-                <Typography color="error">{error}</Typography>
-              </Paper>
-            )}
-            {data.length > 0 && (
-              <Paper sx={{ p: 3, mb: 4, elevation: 3, borderRadius: 2 }}>
-                <TelemetryChart data={data} />
-              </Paper>
-            )}
-            {data.length > 0 && (
-              <Paper sx={{ p: 3, mb: 4, elevation: 3, borderRadius: 2 }}>
-                <TelemetryDataTable data={data} />
-              </Paper>
-            )}
-          </>
-        )}
-
-
-        {/* <Paper sx={{ p: 2, elevation: 2, borderRadius: 2 }}>
-          <Button variant="outlined" onClick={() => setShowExplorer(v => !v)}>
-            {showExplorer ? 'Back to Dashboard' : 'Grid Topology Explorer'}
-          </Button>
-        </Paper> */}
+        <>
+          <TelemetryFilterForm
+            state={state}
+            setState={setState}
+            sector={sector}
+            setSector={setSector}
+            frequency={frequency}
+            setFrequency={setFrequency}
+            start={start}
+            setStart={setStart}
+            end={end}
+            setEnd={setEnd}
+            length={length}
+            setLength={setLength}
+            onFetchData={fetchData}
+            loading={loading}
+          />
+          {error && (
+            <Paper sx={{ p: 2, mb: 3, elevation: 2, borderRadius: 2, bgcolor: 'error.light' }}>
+              <Typography color="error">{error}</Typography>
+            </Paper>
+          )}
+          {data.length > 0 && (
+            <Paper sx={{ p: 3, mb: 4, elevation: 3, borderRadius: 2 }}>
+              <TelemetryChart data={data} />
+            </Paper>
+          )}
+          {data.length > 0 && (
+            <Paper sx={{ p: 3, mb: 4, elevation: 3, borderRadius: 2 }}>
+              <TelemetryDataTable data={data} />
+            </Paper>
+          )}
+        </>
       </Container>
     </Box>
   );
