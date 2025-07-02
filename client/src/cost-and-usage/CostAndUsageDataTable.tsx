@@ -11,11 +11,11 @@ export interface ApiResult {
     sales_units: string;
 }
 
-interface TelemetryDataTableProps {
+interface CostAndUsageDataTableProps {
     data: ApiResult[];
 }
 
-const TelemetryDataTable: React.FC<TelemetryDataTableProps> = ({ data }) => {
+const CostAndUsageDataTable: React.FC<CostAndUsageDataTableProps> = ({ data }) => {
     const [tablePage, setTablePage] = useState(0);
     const [tableRowsPerPage, setTableRowsPerPage] = useState(10);
     const [tableOrderBy, setTableOrderBy] = useState<'period' | 'state' | 'sector' | 'price_cents_per_kwh' | 'sales_million_kwh'>('period');
@@ -143,4 +143,4 @@ const TelemetryDataTable: React.FC<TelemetryDataTableProps> = ({ data }) => {
     );
 };
 
-export default TelemetryDataTable; 
+export default CostAndUsageDataTable; 

@@ -1,13 +1,13 @@
 import React from 'react';
 import { Typography, Box, Paper } from '@mui/material';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import type { ApiResult } from './TelemetryDataTable';
+import type { ApiResult } from './CostAndUsageDataTable';
 
-interface TelemetryChartProps {
+interface CostAndUsageChartProps {
     data: ApiResult[];
 }
 
-const TelemetryChart: React.FC<TelemetryChartProps> = ({ data }) => {
+const CostAndUsageChart: React.FC<CostAndUsageChartProps> = ({ data }) => {
     if (!data.length) return null;
     return (
         <Box sx={{ mb: 4 }}>
@@ -30,4 +30,4 @@ const TelemetryChart: React.FC<TelemetryChartProps> = ({ data }) => {
     );
 };
 
-export default TelemetryChart; 
+export default CostAndUsageChart; 

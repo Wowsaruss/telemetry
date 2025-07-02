@@ -4,10 +4,10 @@ import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import { stateOptions, sectorOptions, frequencyOptions } from './options';
+import { stateOptions, sectorOptions, frequencyOptions } from '../options';
 import { Typography } from '@mui/material';
 
-interface TelemetryFilterFormProps {
+interface CostAndUsageFilterFormProps {
     state: string;
     setState: (state: string) => void;
     sector: string;
@@ -24,7 +24,7 @@ interface TelemetryFilterFormProps {
     loading: boolean;
 }
 
-const TelemetryFilterForm: React.FC<TelemetryFilterFormProps> = ({
+const CostAndUsageFilterForm: React.FC<CostAndUsageFilterFormProps> = ({
     state,
     setState,
     sector,
@@ -165,4 +165,4 @@ const TelemetryFilterForm: React.FC<TelemetryFilterFormProps> = ({
     );
 };
 
-export default TelemetryFilterForm; 
+export default CostAndUsageFilterForm; 

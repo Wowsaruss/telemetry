@@ -171,10 +171,10 @@ telemetry-dashboard/
     src/
       App.tsx                    # Main Cost and Usage Dashboard
       CustomerDashboard.tsx      # Customer Dashboard component
-      TelemetryFilterForm.tsx    # Shared filter form component
-      TelemetryChart.tsx         # Cost and Usage chart component
+      CostAndUsageFilterForm.tsx # Shared filter form component
+      CostAndUsageChart.tsx      # Cost and Usage chart component
       CustomerChart.tsx          # Customer chart component
-      TelemetryDataTable.tsx     # Cost and Usage data table
+      CostAndUsageDataTable.tsx  # Cost and Usage data table
       CustomerDataTable.tsx      # Customer data table
       options.ts                 # Filter options (states, sectors, frequencies)
 ```

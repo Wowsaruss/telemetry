@@ -5,10 +5,10 @@ import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
-import TelemetryDataTable from './TelemetryDataTable';
-import TelemetryChart from './TelemetryChart';
-import TelemetryFilterForm from './TelemetryFilterForm';
-import CustomerDashboard from './CustomerDashboard';
+import CostAndUsageDataTable from './cost-and-usage/CostAndUsageDataTable';
+import CostAndUsageChart from './cost-and-usage/CostAndUsageChart';
+import CostAndUsageFilterForm from './cost-and-usage/CostAndUsageFilterForm';
+import CustomerDashboard from './customer/CustomerDashboard';
 
 interface ApiResult {
   period: string;
@@ -30,8 +30,7 @@ function App() {
   const [data, setData] = useState<ApiResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  // const [showExplorer, setShowExplorer] = useState(false);
-  const [currentDashboard, setCurrentDashboard] = useState<'telemetry' | 'customers'>('telemetry');
+  const [currentDashboard, setCurrentDashboard] = useState<'cost-and-usage' | 'customers'>('cost-and-usage');
 
   const fetchData = async () => {
     setLoading(true);
@@ -57,7 +56,7 @@ function App() {
   };
 
   if (currentDashboard === 'customers') {
-    return <CustomerDashboard onSwitchToTelemetry={() => setCurrentDashboard('telemetry')} />;
+    return <CustomerDashboard onSwitchToCostAndUsage={() => setCurrentDashboard('cost-and-usage')} />;
   }
 
   return (
@@ -76,7 +75,7 @@ function App() {
         </Paper>
 
         <>
-          <TelemetryFilterForm
+          <CostAndUsageFilterForm
             state={state}
             setState={setState}
             sector={sector}
@@ -99,12 +98,12 @@ function App() {
           )}
           {data.length > 0 && (
             <Paper sx={{ p: 3, mb: 4, elevation: 3, borderRadius: 2 }}>
-              <TelemetryChart data={data} />
+              <CostAndUsageChart data={data} />
             </Paper>
           )}
           {data.length > 0 && (
             <Paper sx={{ p: 3, mb: 4, elevation: 3, borderRadius: 2 }}>
-              <TelemetryDataTable data={data} />
+              <CostAndUsageDataTable data={data} />
             </Paper>
           )}
         </>

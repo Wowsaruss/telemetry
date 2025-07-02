@@ -7,7 +7,7 @@ import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import CustomerDataTable from './CustomerDataTable';
 import CustomerChart from './CustomerChart';
-import TelemetryFilterForm from './TelemetryFilterForm';
+import CostAndUsageFilterForm from '../cost-and-usage/CostAndUsageFilterForm';
 
 interface CustomerApiResult {
     period: string;
@@ -18,10 +18,10 @@ interface CustomerApiResult {
 }
 
 interface CustomerDashboardProps {
-    onSwitchToTelemetry: () => void;
+    onSwitchToCostAndUsage: () => void;
 }
 
-function CustomerDashboard({ onSwitchToTelemetry }: CustomerDashboardProps) {
+function CustomerDashboard({ onSwitchToCostAndUsage }: CustomerDashboardProps) {
     const [state, setState] = useState('AZ');
     const [sector, setSector] = useState('RES');
     const [frequency, setFrequency] = useState('annual');
@@ -63,14 +63,14 @@ function CustomerDashboard({ onSwitchToTelemetry }: CustomerDashboardProps) {
                 <Paper sx={{ p: 2, mb: 3, elevation: 2, borderRadius: 2 }}>
                     <Button
                         variant="contained"
-                        onClick={onSwitchToTelemetry}
+                        onClick={onSwitchToCostAndUsage}
                         sx={{ mr: 2 }}
                     >
                         Switch to Cost and Usage Dashboard
                     </Button>
                 </Paper>
                 <>
-                    <TelemetryFilterForm
+                    <CostAndUsageFilterForm
                         state={state}
                         setState={setState}
                         sector={sector}
