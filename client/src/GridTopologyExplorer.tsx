@@ -14,6 +14,8 @@ interface Edge {
   properties: Record<string, any>;
 }
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export default function GridTopologyExplorer() {
   const [geojson, setGeojson] = useState('');
   const [nodes, setNodes] = useState<Node[]>([]);
@@ -27,7 +29,7 @@ export default function GridTopologyExplorer() {
     setNodes([]);
     setEdges([]);
     try {
-      const res = await fetch('http://localhost:4000/api/grid-topology', {
+      const res = await fetch(`${API_BASE_URL}/api/grid-topology`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: 'geojson', data: geojson })
@@ -50,9 +52,9 @@ export default function GridTopologyExplorer() {
   ];
   const mapCenter = allCoords.length
     ? [
-        allCoords.reduce((sum, c) => sum + c[1], 0) / allCoords.length,
-        allCoords.reduce((sum, c) => sum + c[0], 0) / allCoords.length
-      ]
+      allCoords.reduce((sum, c) => sum + c[1], 0) / allCoords.length,
+      allCoords.reduce((sum, c) => sum + c[0], 0) / allCoords.length
+    ]
     : [39.5, -98.35]; // US center
 
   return (

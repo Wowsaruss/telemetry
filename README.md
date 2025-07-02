@@ -150,6 +150,17 @@ npm run dev
 # The app will run on http://localhost:5173
 ```
 
++#### Frontend Environment Variables
++
++The frontend uses the following environment variable (set in `client/.env` or `client/.env.example`):
++
++```env
++VITE_API_BASE_URL=http://localhost:4000
++```
++
++- **VITE_API_BASE_URL**: The base URL for the backend API. Change this if your backend is running on a different host or port, or if deploying to production.
++
+
 ### 4. Using the App
 - Open [http://localhost:5173](http://localhost:5173) in your browser.
 - **Cost and Usage Dashboard** (default): Analyze electricity costs and consumption data

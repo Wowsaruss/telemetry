@@ -8,6 +8,8 @@ import CostAndUsageDataTable from './CostAndUsageDataTable';
 import CostAndUsageChart from './CostAndUsageChart';
 import CostAndUsageFilterForm from './CostAndUsageFilterForm';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 interface ApiResult {
     period: string;
     state: string;
@@ -41,7 +43,7 @@ function CostAndUsageDashboard({ onSwitchToCustomerDashboard }: CostAndUsageDash
         setLoading(true);
         setError('');
         try {
-            const res = await fetch('http://localhost:4000/api/cost-and-usage?' + new URLSearchParams(params as any)).then(r => r.json());
+            const res = await fetch(`${API_BASE_URL}/api/cost-and-usage?` + new URLSearchParams(params as any)).then(r => r.json());
             const arr = Array.isArray(res) ? res : [res];
             setData(arr);
         } catch (err: any) {

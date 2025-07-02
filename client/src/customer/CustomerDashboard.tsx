@@ -20,6 +20,8 @@ interface CustomerDashboardProps {
     onSwitchToCostAndUsage: () => void;
 }
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 function CustomerDashboard({ onSwitchToCostAndUsage }: CustomerDashboardProps) {
     const [state, setState] = useState('AZ');
     const [sector, setSector] = useState('RES');
@@ -39,7 +41,7 @@ function CustomerDashboard({ onSwitchToCostAndUsage }: CustomerDashboardProps) {
         setLoading(true);
         setError('');
         try {
-            const res = await fetch('http://localhost:4000/api/customers?' + new URLSearchParams(params as any)).then(r => r.json());
+            const res = await fetch(`${API_BASE_URL}/api/customers?` + new URLSearchParams(params as any)).then(r => r.json());
             const arr = Array.isArray(res) ? res : [res];
             setData(arr);
         } catch (err: any) {
