@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -33,11 +33,14 @@ function CostAndUsageDashboard({ onSwitchToCustomerDashboard }: CostAndUsageDash
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    const fetchData = async () => {
+    // Memoize params to avoid unnecessary fetches
+    const params = useMemo(() => ({ state, sector, frequency, start, end, length }), [state, sector, frequency, start, end, length]);
+
+    // Memoized fetchData
+    const fetchData = useCallback(async () => {
         setLoading(true);
         setError('');
         try {
-            const params = { state, sector, frequency, start, end, length };
             const res = await fetch('http://localhost:4000/api/cost-and-usage?' + new URLSearchParams(params as any)).then(r => r.json());
             const arr = Array.isArray(res) ? res : [res];
             setData(arr);
@@ -47,7 +50,11 @@ function CostAndUsageDashboard({ onSwitchToCustomerDashboard }: CostAndUsageDash
         } finally {
             setLoading(false);
         }
-    };
+    }, [params]);
+
+    // Memoize chart and table data (could add more processing here if needed)
+    const chartData = useMemo(() => data, [data]);
+    const tableData = useMemo(() => data, [data]);
 
     return (
         <Box sx={{ minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', pt: 4 }}>
@@ -83,14 +90,14 @@ function CostAndUsageDashboard({ onSwitchToCustomerDashboard }: CostAndUsageDash
                         <Typography color="error">{error}</Typography>
                     </Paper>
                 )}
-                {data.length > 0 && (
+                {chartData.length > 0 && (
                     <Paper sx={{ p: 3, mb: 4, elevation: 3, borderRadius: 2 }}>
-                        <CostAndUsageChart data={data} />
+                        <CostAndUsageChart data={chartData} />
                     </Paper>
                 )}
-                {data.length > 0 && (
+                {tableData.length > 0 && (
                     <Paper sx={{ p: 3, mb: 4, elevation: 3, borderRadius: 2 }}>
-                        <CostAndUsageDataTable data={data} />
+                        <CostAndUsageDataTable data={tableData} />
                     </Paper>
                 )}
             </Container>

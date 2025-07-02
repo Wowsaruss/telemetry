@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import axios from 'axios';
+import { useState, useCallback, useMemo } from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -32,28 +31,28 @@ function CustomerDashboard({ onSwitchToCostAndUsage }: CustomerDashboardProps) {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
-    const fetchData = async () => {
+    // Memoize params
+    const params = useMemo(() => ({ state, sector, frequency, start, end, length }), [state, sector, frequency, start, end, length]);
+
+    // Memoized fetchData
+    const fetchData = useCallback(async () => {
         setLoading(true);
         setError('');
-
         try {
-            const params = { state, sector, frequency, start, end, length };
-            const res = await axios.get<CustomerApiResult[]>('http://localhost:4000/api/customers', { params });
-            // If backend returns a single object, wrap in array
-            const arr = Array.isArray(res.data) ? res.data : [res.data];
-
+            const res = await fetch('http://localhost:4000/api/customers?' + new URLSearchParams(params as any)).then(r => r.json());
+            const arr = Array.isArray(res) ? res : [res];
             setData(arr);
-        } catch (err: unknown) {
-            if (axios.isAxiosError(err)) {
-                setError(err.response?.data?.error || 'Failed to fetch customer data');
-            } else {
-                setError('Failed to fetch customer data');
-            }
+        } catch (err: any) {
+            setError(err?.message || 'Failed to fetch customer data');
             setData([]);
         } finally {
             setLoading(false);
         }
-    };
+    }, [params]);
+
+    // Memoize chart and table data
+    const chartData = useMemo(() => data, [data]);
+    const tableData = useMemo(() => data, [data]);
 
     return (
         <Box sx={{ minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', pt: 4 }}>
@@ -91,14 +90,14 @@ function CustomerDashboard({ onSwitchToCostAndUsage }: CustomerDashboardProps) {
                             <Typography color="error">{error}</Typography>
                         </Paper>
                     )}
-                    {data.length > 0 && (
+                    {chartData.length > 0 && (
                         <Paper sx={{ p: 3, mb: 4, elevation: 3, borderRadius: 2 }}>
-                            <CustomerChart data={data} />
+                            <CustomerChart data={chartData} />
                         </Paper>
                     )}
-                    {data.length > 0 && (
+                    {tableData.length > 0 && (
                         <Paper sx={{ p: 3, mb: 4, elevation: 3, borderRadius: 2 }}>
-                            <CustomerDataTable data={data} />
+                            <CustomerDataTable data={tableData} />
                         </Paper>
                     )}
                 </>
