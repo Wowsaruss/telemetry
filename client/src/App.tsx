@@ -1,14 +1,15 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
 import GridTopologyExplorer from './GridTopologyExplorer';
 import TelemetryDataTable from './TelemetryDataTable';
 import TelemetryChart from './TelemetryChart';
 import TelemetryFilterForm from './TelemetryFilterForm';
-import Box from '@mui/material/Box';
+import CustomerDashboard from './CustomerDashboard';
 
 interface ApiResult {
   period: string;
@@ -31,6 +32,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showExplorer, setShowExplorer] = useState(false);
+  const [currentDashboard, setCurrentDashboard] = useState<'telemetry' | 'customers'>('telemetry');
 
   const fetchData = async () => {
     setLoading(true);
@@ -55,10 +57,24 @@ function App() {
     }
   };
 
+  if (currentDashboard === 'customers') {
+    return <CustomerDashboard onSwitchToTelemetry={() => setCurrentDashboard('telemetry')} />;
+  }
+
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', pt: 4 }}>
       <Container maxWidth="lg" sx={{ py: 4, mx: 'auto', textAlign: 'center' }}>
         <Typography variant="h4" gutterBottom>Telemetry Dashboard</Typography>
+
+        <Paper sx={{ p: 2, mb: 3, elevation: 2, borderRadius: 2 }}>
+          <Button
+            variant="contained"
+            onClick={() => setCurrentDashboard('customers')}
+            sx={{ mr: 2 }}
+          >
+            Switch to Customer Dashboard
+          </Button>
+        </Paper>
 
         {showExplorer ? (
           <GridTopologyExplorer />
@@ -98,11 +114,12 @@ function App() {
           </>
         )}
 
-        <Paper sx={{ p: 2, elevation: 2, borderRadius: 2 }}>
+
+        {/* <Paper sx={{ p: 2, elevation: 2, borderRadius: 2 }}>
           <Button variant="outlined" onClick={() => setShowExplorer(v => !v)}>
             {showExplorer ? 'Back to Dashboard' : 'Grid Topology Explorer'}
           </Button>
-        </Paper>
+        </Paper> */}
       </Container>
     </Box>
   );

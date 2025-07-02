@@ -26,6 +26,16 @@ interface EiaRetailSalesResult {
     'sales-units': string;
 }
 
+interface EiaCustomerResult {
+    period: string;
+    stateid: string;
+    stateDescription: string;
+    sectorid: string;
+    sectorName: string;
+    customers: string;
+    'customers-units': string;
+}
+
 app.get('/api/telemetry', async (req: Request, res: Response) => {
     try {
         const apiKey = process.env.EIA_API_KEY;
@@ -90,6 +100,69 @@ app.get('/api/telemetry', async (req: Request, res: Response) => {
     }
 });
 
+app.get('/api/customers', async (req: Request, res: Response) => {
+    try {
+        const apiKey = process.env.EIA_API_KEY;
+        if (!apiKey) {
+            res.status(500).json({ error: 'EIA API key not set in environment.' });
+            return;
+        }
+        // Get query params or set defaults
+        const state = (req.query.state || 'AZ').toString().toUpperCase(); // Default: Arizona
+        const sector = (req.query.sector || 'RES').toString().toUpperCase(); // Default: Residential
+        const frequency = (req.query.frequency || 'annual').toString().toLowerCase(); // Default: annual for customers
+        const start = req.query.start ? req.query.start.toString() : undefined;
+        const end = req.query.end ? req.query.end.toString() : undefined;
+        const length = req.query.length ? req.query.length.toString() : '5000'; // Default: 5000
+
+        // Build a cache key from all query params
+        const cacheKey = `customers:${state}:${sector}:${frequency}:${start || ''}:${end || ''}:${length}`;
+        // Try to get from Redis
+        const cached = await redisClient.get(cacheKey);
+        if (cached) {
+            res.json(JSON.parse(cached));
+            return;
+        }
+
+        let url = `https://api.eia.gov/v2/electricity/retail-sales/data/?api_key=${apiKey}&frequency=${frequency}&data[0]=customers&facets[stateid][]=${state}&facets[sectorid][]=${sector}`;
+        if (start) url += `&start=${start}`;
+        if (end) url += `&end=${end}`;
+        url += `&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=${length}`;
+
+        const response = await axios.get(url);
+
+        let dataArr: EiaCustomerResult[] = response.data.response.data;
+        if (!dataArr || dataArr.length === 0) {
+            res.status(404).json({ error: 'No customer data returned from EIA for the given filters.' });
+            return;
+        }
+
+        // If period is specified, filter for that period
+        if (req.query.period) {
+            dataArr = dataArr.filter((item: EiaCustomerResult) => item.period === req.query.period);
+            if (dataArr.length === 0) {
+                res.status(404).json({ error: 'No customer data for the specified period.' });
+                return;
+            }
+        }
+        // Return all results in the filtered array
+        const formatted = dataArr.map(item => ({
+            period: item.period,
+            state: item.stateDescription,
+            sector: item.sectorName,
+            customers: parseFloat(item.customers),
+            customers_units: item['customers-units'],
+        }));
+        // Cache the result in Redis for 1 hour
+        await redisClient.set(cacheKey, JSON.stringify(formatted), { EX: 60 * 60 });
+        res.json(formatted);
+    } catch (error) {
+        console.error('Error fetching EIA customer data:', error);
+        res.status(500).json({ error: 'Failed to fetch customer data from EIA.' });
+    }
+});
+
+// This was just a fun idea, but it's not fully implemented yet.
 // Grid Topology Explorer API
 // Accepts POST with { type: 'geojson' | 'pslf' | 'opendss', data: string|object }
 // For now, only GeoJSON is supported
