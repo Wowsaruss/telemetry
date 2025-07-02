@@ -11,7 +11,7 @@ const TelemetryChart: React.FC<TelemetryChartProps> = ({ data }) => {
     if (!data.length) return null;
     return (
         <Box sx={{ mb: 4 }}>
-            <Typography variant="h6" gutterBottom>Price & Sales Over Time</Typography>
+            <Typography variant="h6" gutterBottom>Cost & Usage Over Time</Typography>
             <Paper sx={{ p: 2, bgcolor: 'black' }}>
                 <ResponsiveContainer width="100%" height={300}>
                     <LineChart data={data.slice().reverse()}>

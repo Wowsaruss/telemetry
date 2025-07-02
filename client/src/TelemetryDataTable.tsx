@@ -38,8 +38,8 @@ const TelemetryDataTable: React.FC<TelemetryDataTableProps> = ({ data }) => {
     if (!data.length) return null;
 
     return (
-        <Paper sx={{ p: 2 }}>
-            <Typography variant="h6" gutterBottom>Data Table</Typography>
+        <Box sx={{ mb: 4 }}>
+            <Typography variant="h6" gutterBottom>Cost & Usage Data</Typography>
             <Box sx={{ overflowX: 'auto' }}>
                 <TableContainer>
                     <Table size="small" style={{ width: '100%', borderCollapse: 'collapse' }}>
@@ -139,7 +139,7 @@ const TelemetryDataTable: React.FC<TelemetryDataTableProps> = ({ data }) => {
                     />
                 </TableContainer>
             </Box>
-        </Paper>
+        </Box>
     );
 };
 

@@ -36,7 +36,7 @@ interface EiaCustomerResult {
     'customers-units': string;
 }
 
-app.get('/api/telemetry', async (req: Request, res: Response) => {
+app.get('/api/cost-and-usage', async (req: Request, res: Response) => {
     try {
         const apiKey = process.env.EIA_API_KEY;
         if (!apiKey) {
@@ -52,7 +52,7 @@ app.get('/api/telemetry', async (req: Request, res: Response) => {
         const length = req.query.length ? req.query.length.toString() : '5000'; // Default: 5000
 
         // Build a cache key from all query params
-        const cacheKey = `telemetry:${state}:${sector}:${frequency}:${start || ''}:${end || ''}:${length}`;
+        const cacheKey = `cost-and-usage:${state}:${sector}:${frequency}:${start || ''}:${end || ''}:${length}`;
         // Try to get from Redis
         const cached = await redisClient.get(cacheKey);
         if (cached) {
@@ -69,7 +69,7 @@ app.get('/api/telemetry', async (req: Request, res: Response) => {
 
         let dataArr: EiaRetailSalesResult[] = response.data.response.data;
         if (!dataArr || dataArr.length === 0) {
-            res.status(404).json({ error: 'No data returned from EIA for the given filters.' });
+            res.status(404).json({ error: 'No cost and usage data returned from EIA for the given filters.' });
             return;
         }
 
@@ -77,7 +77,7 @@ app.get('/api/telemetry', async (req: Request, res: Response) => {
         if (req.query.period) {
             dataArr = dataArr.filter((item: EiaRetailSalesResult) => item.period === req.query.period);
             if (dataArr.length === 0) {
-                res.status(404).json({ error: 'No data for the specified period.' });
+                res.status(404).json({ error: 'No cost and usage data for the specified period.' });
                 return;
             }
         }
@@ -95,8 +95,8 @@ app.get('/api/telemetry', async (req: Request, res: Response) => {
         await redisClient.set(cacheKey, JSON.stringify(formatted), { EX: 60 * 60 });
         res.json(formatted);
     } catch (error) {
-        console.error('Error fetching EIA data:', error);
-        res.status(500).json({ error: 'Failed to fetch data from EIA.' });
+        console.error('Error fetching EIA cost and usage data:', error);
+        res.status(500).json({ error: 'Failed to fetch cost and usage data from EIA.' });
     }
 });
 

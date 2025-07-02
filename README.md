@@ -1,12 +1,13 @@
-# Telemetry Dashboard
+# Cost and Usage Dashboard
 
-A full-stack web application for visualizing and analyzing U.S. power grid and electricity sales data. The dashboard allows users to filter by state, sector, and time range, and displays results in interactive charts and tables.
+A full-stack web application for visualizing and analyzing U.S. power grid electricity cost and usage data. The dashboard allows users to filter by state, sector, and time range, and displays results in interactive charts and tables.
 
 ## Problem Statement
 
 The U.S. energy sector generates vast amounts of telemetry data that is often difficult to access, analyze, and visualize effectively. This is a user-friendly tool to:
 - Query electricity sales and pricing data across different states and sectors
 - Visualize trends and patterns in energy consumption and costs
+- Analyze customer count data for market insights
 - Reduce redundant API calls through intelligent caching
 - Provide real-time insights into the energy market
 
@@ -43,11 +44,27 @@ The U.S. energy sector generates vast amounts of telemetry data that is often di
 - ❌ **Tradeoffs**: Rate limits, API key requirements, data format constraints
 
 ## Current Features
+
+### Cost and Usage Dashboard
 - Fetches real electricity sales and price data from the EIA API
-- Filter by state, sector, start/end date, and result length
-- Visualizes data with interactive charts (Recharts) and tables (Material-UI)
+- Filter by state, sector, frequency (monthly/annual), and date range
+- Visualizes cost and usage trends with interactive charts (Recharts)
+- Displays detailed data tables with sorting and pagination
 - Modern React + TypeScript frontend (Vite)
-- Node.js + TypeScript backend API
+
+### Customer Dashboard
+- Fetches customer count data from the EIA API
+- Filter by state, sector, and date range (annual frequency)
+- Visualizes customer trends over time
+- Displays customer data tables with sorting and pagination
+- Separate dashboard for market analysis
+
+### Shared Features
+- Node.js + TypeScript backend API with Redis caching
+- Responsive Material-UI design with floating containers
+- Easy navigation between dashboards
+- Real-time data filtering and visualization
+- Error handling and loading states
 
 ## Next Steps & Future Enhancements
 1. **Advanced Filtering**: Implement date range pickers and more granular filtering options
@@ -135,8 +152,14 @@ npm run dev
 
 ### 4. Using the App
 - Open [http://localhost:5173](http://localhost:5173) in your browser.
-- Use the filter bar to select state, sector, frequency, and date range.
-- Click "Fetch Data" to view results in charts and tables.
+- **Cost and Usage Dashboard** (default): Analyze electricity costs and consumption data
+  - Use the filter bar to select state, sector, frequency (monthly/annual), and date range
+  - Click "Fetch Data" to view cost and usage trends in charts and tables
+- **Customer Dashboard**: Analyze customer count data
+  - Click "Switch to Customer Dashboard" to access customer analytics
+  - Filter by state, sector, and date range (annual frequency)
+  - View customer trends and market insights
+- Navigate between dashboards using the toggle buttons
 
 ---
 
@@ -145,14 +168,24 @@ npm run dev
 telemetry-dashboard/
   server/    # Node.js + TypeScript backend API with Redis caching
   client/    # React + TypeScript frontend (Vite)
+    src/
+      App.tsx                    # Main Cost and Usage Dashboard
+      CustomerDashboard.tsx      # Customer Dashboard component
+      TelemetryFilterForm.tsx    # Shared filter form component
+      TelemetryChart.tsx         # Cost and Usage chart component
+      CustomerChart.tsx          # Customer chart component
+      TelemetryDataTable.tsx     # Cost and Usage data table
+      CustomerDataTable.tsx      # Customer data table
+      options.ts                 # Filter options (states, sectors, frequencies)
 ```
 
 ---
 
 ## API Reference
-- The backend exposes `/api/telemetry` for filtered data with Redis caching.
-- The backend exposes `/api/grid-topology` for parsing electric grid topology data.
-- See `server/src/index.ts` for details.
+- **`/api/cost-and-usage`**: Fetches cost and usage data with Redis caching
+- **`/api/customers`**: Fetches customer count data with Redis caching
+- **`/api/grid-topology`**: Parses electric grid topology data (GeoJSON support)
+- See `server/src/index.ts` for implementation details
 
 ---
 

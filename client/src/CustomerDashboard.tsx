@@ -66,7 +66,7 @@ function CustomerDashboard({ onSwitchToTelemetry }: CustomerDashboardProps) {
                         onClick={onSwitchToTelemetry}
                         sx={{ mr: 2 }}
                     >
-                        Switch to Telemetry Dashboard
+                        Switch to Cost and Usage Dashboard
                     </Button>
                 </Paper>
                 <>

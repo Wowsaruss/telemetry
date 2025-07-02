@@ -39,16 +39,16 @@ function App() {
 
     try {
       const params = { state, sector, frequency, start, end, length };
-      const res = await axios.get<ApiResult[]>('http://localhost:4000/api/telemetry', { params });
+      const res = await axios.get<ApiResult[]>('http://localhost:4000/api/cost-and-usage', { params });
       // If backend returns a single object, wrap in array
       const arr = Array.isArray(res.data) ? res.data : [res.data];
 
       setData(arr);
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.error || 'Failed to fetch data');
+        setError(err.response?.data?.error || 'Failed to fetch cost and usage data');
       } else {
-        setError('Failed to fetch data');
+        setError('Failed to fetch cost and usage data');
       }
       setData([]);
     } finally {
@@ -63,7 +63,7 @@ function App() {
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', pt: 4 }}>
       <Container maxWidth="lg" sx={{ py: 4, mx: 'auto', textAlign: 'center' }}>
-        <Typography variant="h4" gutterBottom>Telemetry Dashboard</Typography>
+        <Typography variant="h4" gutterBottom>Cost and Usage Dashboard</Typography>
 
         <Paper sx={{ p: 2, mb: 3, elevation: 2, borderRadius: 2 }}>
           <Button
