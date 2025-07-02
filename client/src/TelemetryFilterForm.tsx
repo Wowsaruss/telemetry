@@ -64,6 +64,9 @@ const TelemetryFilterForm: React.FC<TelemetryFilterFormProps> = ({
 
     return (
         <Paper sx={{ p: 3, mb: 4, elevation: 3, borderRadius: 2 }}>
+            <Typography variant="h6" gutterBottom sx={{ mb: 3, fontWeight: 600 }}>
+                Filter Price & Sales Data
+            </Typography>
             <Grid container spacing={2} alignItems="center" sx={{ mb: 2 }}>
                 <Grid size={{ xs: 12, sm: 2 }}>
                     <TextField
